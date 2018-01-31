@@ -21,7 +21,7 @@ $elementID = 'ssb' . uniqid();
 ?><html>
     <body>
     <component src="js-lightbox" />
-    <span id="<?= $elementID ?>" style="cursor:pointer;background-color:#3374ce;border:1px solid #3169c4;font-size:12px;font-family:Helvetica,Arial,sans-serif;font-weight:bold;display:inline-block;height:33px;line-height:32px;padding:0px 10px;color:#fff;border-radius:2px;"><?= __('ivopetkov.socialSharing.Share') ?><?= $hasCount ? ' | ' . $count : '' ?></span>
+    <span id="<?= $elementID ?>" style="cursor:pointer;background-color:#3374ce;border:1px solid #3169c4;font-size:12px;font-family:Helvetica,Arial,sans-serif;font-weight:bold;display:inline-block;height:33px;line-height:32px;padding:0px 10px;color:#fff;border-radius:2px;"><?= __('ivopetkov.socialSharing.Share') ?><?= $hasCount && $count > 0 ? ' | ' . $count : '' ?></span>
     <script>
         var element = document.getElementById('<?= $elementID ?>');
         var interval = window.setInterval(function () {
