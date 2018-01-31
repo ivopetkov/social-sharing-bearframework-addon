@@ -42,7 +42,7 @@ $elementID = 'ssb' . uniqid();
                 };
                 lightboxData.images.push({
                     'html': '<div>' +
-                            '<div style="font-size:1.5rem;color:#fff;text-align:center;cursor:default;padding-bottom:0.5rem;"><?= htmlspecialchars(__('ivopetkov.socialSharing.ShareOn')) ?><\/div>' +
+                            '<div style="font-family:Helvetica,Arial,sans-serif;font-size:1.5rem;color:#fff;text-align:center;cursor:default;padding-bottom:0.5rem;"><?= htmlspecialchars(__('ivopetkov.socialSharing.ShareOn')) ?><\/div>' +
                             '<div>' +
                             '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnFacebook')) ?>" href="http://www.facebook.com/share.php?u=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['fb'] + '"><\/a>' +
                             '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnTwitter')) ?>" href="http://twitter.com/intent/tweet?status=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['tw'] + '"><\/a>' +
