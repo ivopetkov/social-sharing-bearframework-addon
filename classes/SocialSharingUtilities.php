@@ -21,6 +21,9 @@ class SocialSharingUtilities
 
         $cacheKey = 'social-sharing-count-' . $url;
         $value = $app->cache->getValue($cacheKey);
+        if ($value === '-1') {
+            return null;
+        }
         if ($value !== null) {
             return (int) $value;
         } else {
@@ -77,26 +80,33 @@ class SocialSharingUtilities
 
         $count = 0;
 
-        $getFacebookCount = function($result) {
+        $hasInvalidData = false;
+        $getFacebookCount = function($result) use (&$hasInvalidData) {
             if (strlen($result) > 0) {
                 $data = json_decode($result, true);
                 if (is_array($data) && isset($data['share']) && is_array($data['share']) && isset($data['share']['share_count'])) {
                     return (int) $data['share']['share_count'];
                 }
             }
+            $hasInvalidData = true;
         };
         $count += $getFacebookCount($result['facebook1']);
         $count += $getFacebookCount($result['facebook2']);
 
-        $getFacebookCount = function($result) {
+        $getLinkedInCount = function($result) use (&$hasInvalidData) {
             if (strlen($result) > 0) {
                 $data = json_decode($result, true);
                 if (is_array($data) && isset($data['count'])) {
                     return (int) $data['count'];
                 }
             }
+            $hasInvalidData = true;
         };
-        $count += $getFacebookCount($result['linkedin']);
+        $count += $getLinkedInCount($result['linkedin']);
+
+        if ($hasInvalidData) {
+            $count = '-1';
+        }
 
         $cacheItem = $app->cache->make($cacheKey, $count);
         $cacheItem->ttl = 60 * 60;

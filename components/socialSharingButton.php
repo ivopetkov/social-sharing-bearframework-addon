@@ -45,11 +45,11 @@ $elementID = 'ssb' . uniqid();
                         'html': '<div>' +
                                 '<div style="font-family:Helvetica,Arial,sans-serif;font-size:1.5rem;color:#fff;text-align:center;cursor:default;padding-bottom:0.5rem;"><?= htmlspecialchars(__('ivopetkov.socialSharing.ShareOn')) ?><\/div>' +
                                 '<div>' +
-                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnFacebook')) ?>" href="http://www.facebook.com/share.php?u=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['fb'] + '"><\/a>' +
-                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnTwitter')) ?>" href="http://twitter.com/intent/tweet?status=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['tw'] + '"><\/a>' +
-                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnGooglePlus')) ?>" href="https://plus.google.com/share?url=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['gp'] + '"><\/a>' +
-                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnLinkedIn')) ?>" href="http://www.linkedin.com/shareArticle?mini=true&url=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['in'] + '"><\/a>' +
-                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareInAnEmail')) ?>" href="mailto:?subject=&body=' + encodeURIComponent(url) + '" style="' + style + styles['em'] + '"><\/a>' +
+                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnFacebook')) ?>" rel="noopener" href="http://www.facebook.com/share.php?u=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['fb'] + '"><\/a>' +
+                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnTwitter')) ?>" rel="noopener" href="http://twitter.com/intent/tweet?status=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['tw'] + '"><\/a>' +
+                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnGooglePlus')) ?>" rel="noopener" href="https://plus.google.com/share?url=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['gp'] + '"><\/a>' +
+                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareOnLinkedIn')) ?>" rel="noopener" href="http://www.linkedin.com/shareArticle?mini=true&url=' + encodeURIComponent(url) + '" target="_blank" style="' + style + styles['in'] + '"><\/a>' +
+                                '<a title="<?= htmlentities(__('ivopetkov.socialSharing.ShareInAnEmail')) ?>" rel="noopener" href="mailto:?subject=&body=' + encodeURIComponent(url) + '" style="' + style + styles['em'] + '"><\/a>' +
                                 '<\/div>' +
                                 '<\/div>'
                     });
@@ -60,7 +60,7 @@ $elementID = 'ssb' . uniqid();
 <?php if (!$hasCount) { ?>
                         ivoPetkov.bearFrameworkAddons.serverRequests.send('ivopetkov-social-sharing-get-count', {'url': url}, function (response) {
                             var result = JSON.parse(response);
-                            if (typeof result.count !== 'undefined') {
+                            if (typeof result.count !== 'undefined' && result.count !== null) {
                                 var count = parseInt(result.count, 10);
                                 if (count > 0) {
                                     element.innerHTML += ' | ' + count;
