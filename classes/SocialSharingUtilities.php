@@ -19,99 +19,95 @@ class SocialSharingUtilities
         $app = App::get();
         $url = preg_replace("(^https?://)", "", $url);
 
-        $cacheKey = 'social-sharing-count-' . $url;
-        $value = $app->cache->getValue($cacheKey);
-        if ($value === '-1') {
-            return null;
-        }
-        if ($value !== null) {
-            return (int) $value;
-        } else {
-            if ($returnCachedValue) {
-                return null;
-            }
-        }
+        $cacheKey = 'social-sharing-count-' . md5($url);
+        if (!$returnCachedValue && !$app->cache->exists($cacheKey . '-updated')) {
+            $mh = curl_multi_init();
+            $handles = [];
+            $result = [];
 
-        $mh = curl_multi_init();
-        $handles = [];
-        $result = [];
+            $add = function($url) use ($mh) {
+                $handle = curl_init();
+                curl_setopt($handle, CURLOPT_URL, $url);
+                curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
+                curl_multi_add_handle($mh, $handle);
+                return $handle;
+            };
 
-        $addFacebook = function($url) use ($mh) {
-            $url = 'https://graph.facebook.com/?id=' . rawurlencode($url);
-            $handle = curl_init();
-            curl_setopt($handle, CURLOPT_URL, $url);
-            curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
-            curl_multi_add_handle($mh, $handle);
-            return $handle;
-        };
-        $handles['facebook1'] = $addFacebook('http://' . $url);
-        $handles['facebook2'] = $addFacebook('https://' . $url);
+            $handles['facebook'] = $add('https://graph.facebook.com/?ids=' . rawurlencode('http://' . $url) . ',' . rawurlencode('https://' . $url));
+            $handles['linkedin'] = $add('https://www.linkedin.com/countserv/count/share?url=' . rawurlencode('http://' . $url) . '&format=json');
 
-        $addLinkedIn = function($url) use ($mh) {
-            $url = 'https://www.linkedin.com/countserv/count/share?url=' . rawurlencode($url) . '&format=json';
-            $handle = curl_init();
-            curl_setopt($handle, CURLOPT_URL, $url);
-            curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
-            curl_multi_add_handle($mh, $handle);
-            return $handle;
-        };
-        $handles['linkedin'] = $addLinkedIn('http://' . $url);
-
-        $active = null;
-        do {
-            $mrc = curl_multi_exec($mh, $active);
-        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-
-        while ($active && $mrc == CURLM_OK) {
-            $selectResult = curl_multi_select($mh);
-            if ($selectResult === -1) {
-                usleep(50);
-            }
+            $active = null;
             do {
                 $mrc = curl_multi_exec($mh, $active);
             } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-        }
 
-        foreach ($handles as $id => $handle) {
-            $result[$id] = curl_multi_getcontent($handle);
-            curl_multi_remove_handle($mh, $handle);
-        }
-        curl_multi_close($mh);
-
-        $count = 0;
-
-        $hasInvalidData = false;
-        $getFacebookCount = function($result) use (&$hasInvalidData) {
-            if (strlen($result) > 0) {
-                $data = json_decode($result, true);
-                if (is_array($data) && isset($data['share']) && is_array($data['share']) && isset($data['share']['share_count'])) {
-                    return (int) $data['share']['share_count'];
+            while ($active && $mrc == CURLM_OK) {
+                $selectResult = curl_multi_select($mh);
+                if ($selectResult === -1) {
+                    usleep(50);
                 }
+                do {
+                    $mrc = curl_multi_exec($mh, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
             }
-            $hasInvalidData = true;
-        };
-        $count += $getFacebookCount($result['facebook1']);
-        $count += $getFacebookCount($result['facebook2']);
 
-        $getLinkedInCount = function($result) use (&$hasInvalidData) {
-            if (strlen($result) > 0) {
-                $data = json_decode($result, true);
-                if (is_array($data) && isset($data['count'])) {
-                    return (int) $data['count'];
+            foreach ($handles as $id => $handle) {
+                $result[$id] = curl_multi_getcontent($handle);
+                curl_multi_remove_handle($mh, $handle);
+            }
+            curl_multi_close($mh);
+
+            $count = 0;
+
+            $hasInvalidData = false;
+            $getFacebookCount = function($result) use (&$hasInvalidData) {
+                $count = null;
+                if (strlen($result) > 0) {
+                    $data = json_decode($result, true);
+                    if (is_array($data)) {
+                        foreach ($data as $item) {
+                            if (is_array($item) && isset($item['share']) && is_array($item['share']) && isset($item['share']['share_count'])) {
+                                if ($count === null) {
+                                    $count = 0;
+                                }
+                                $count += (int) $item['share']['share_count'];
+                            }
+                        }
+                    }
                 }
-            }
-            $hasInvalidData = true;
-        };
-        $count += $getLinkedInCount($result['linkedin']);
+                if ($count === null) {
+                    $hasInvalidData = true;
+                    return 0;
+                }
+                return $count;
+            };
+            $count += $getFacebookCount($result['facebook']);
 
-        if ($hasInvalidData) {
-            $count = '-1';
+            $getLinkedInCount = function($result) use (&$hasInvalidData) {
+                if (strlen($result) > 0) {
+                    $data = json_decode($result, true);
+                    if (is_array($data) && isset($data['count'])) {
+                        return (int) $data['count'];
+                    }
+                }
+                $hasInvalidData = true;
+            };
+            $count += $getLinkedInCount($result['linkedin']);
+
+            if (!$hasInvalidData) {
+                $cacheItem = $app->cache->make($cacheKey, $count);
+                $app->cache->set($cacheItem);
+            }
+            $cacheItem = $app->cache->make($cacheKey . '-updated', 1);
+            $cacheItem->ttl = 5;
+            $app->cache->set($cacheItem);
         }
 
-        $cacheItem = $app->cache->make($cacheKey, $count);
-        $cacheItem->ttl = 60 * 60;
-        $app->cache->set($cacheItem);
-        return $count;
+        $value = $app->cache->getValue($cacheKey);
+        if ($value !== null) {
+            return (int) $value;
+        }
+        return null;
     }
 
 }
