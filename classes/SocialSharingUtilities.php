@@ -14,13 +14,45 @@ use BearFramework\App;
 class SocialSharingUtilities
 {
 
+    /**
+     * 
+     * @param string $url
+     * @param bool $returnCachedValue
+     * @return ?int
+     */
     static function getSharesCount(string $url, bool $returnCachedValue = false): ?int
     {
         $app = App::get();
         $url = preg_replace("(^https?://)", "", $url);
 
         $cacheKey = 'social-sharing-count-' . md5($url);
-        if (!$returnCachedValue && !$app->cache->exists($cacheKey . '-updated')) {
+        $value = $app->cache->getValue($cacheKey);
+        if ($value !== null) {
+            return (int) $value;
+        }
+        if ($returnCachedValue) {
+            return null;
+        }
+
+        $cacheTTL = 60 * 60;
+
+        $lockKey = 'ivopetkov-social-sharing-' . md5($url);
+        $app->locks->acquire($lockKey);
+
+        $count = null;
+        $done = false;
+        $dataKey = '.temp/ivopetkov-social-sharing/' . md5($url) . '.json';
+        $data = $app->data->getValue($dataKey);
+        $data = $data === null ? [] : json_decode($data, true);
+        if (is_array($data) && isset($data['count'])) {
+            $count = (int) $data['count'];
+            if (isset($data['lastUpdateTime']) && $data['lastUpdateTime'] + $cacheTTL > time()) {
+                $done = true;
+            }
+        }
+
+        if (!$done) {
+
             $mh = curl_multi_init();
             $handles = [];
             $result = [];
@@ -57,7 +89,7 @@ class SocialSharingUtilities
             }
             curl_multi_close($mh);
 
-            $count = 0;
+            $newCount = 0;
 
             $hasInvalidData = false;
             $getFacebookCount = function($result) use (&$hasInvalidData) {
@@ -81,7 +113,7 @@ class SocialSharingUtilities
                 }
                 return $count;
             };
-            $count += $getFacebookCount($result['facebook']);
+            $newCount += $getFacebookCount($result['facebook']);
 
             $getLinkedInCount = function($result) use (&$hasInvalidData) {
                 if (strlen($result) > 0) {
@@ -92,22 +124,22 @@ class SocialSharingUtilities
                 }
                 $hasInvalidData = true;
             };
-            $count += $getLinkedInCount($result['linkedin']);
+            $newCount += $getLinkedInCount($result['linkedin']);
 
             if (!$hasInvalidData) {
-                $cacheItem = $app->cache->make($cacheKey, $count);
-                $app->cache->set($cacheItem);
+                $count = $newCount;
             }
-            $cacheItem = $app->cache->make($cacheKey . '-updated', 1);
-            $cacheItem->ttl = 5;
-            $app->cache->set($cacheItem);
+
+            $app->data->setValue($dataKey, json_encode(['count' => $count, 'lastUpdateTime' => time()]));
         }
 
-        $value = $app->cache->getValue($cacheKey);
-        if ($value !== null) {
-            return (int) $value;
-        }
-        return null;
+        $cacheItem = $app->cache->make($cacheKey, $count);
+        $cacheItem->ttl = $cacheTTL;
+        $app->cache->set($cacheItem);
+
+        $app->locks->release($lockKey);
+
+        return $count;
     }
 
 }
