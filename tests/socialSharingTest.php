@@ -10,7 +10,7 @@
 /**
  * @runTestsInSeparateProcesses
  */
-class SocialSharingTest extends BearFrameworkAddonTestCase
+class SocialSharingTest extends BearFramework\AddonTests\PHPUnitTestCase
 {
 
     /**
@@ -18,8 +18,6 @@ class SocialSharingTest extends BearFrameworkAddonTestCase
      */
     public function testOutput()
     {
-        $app = $this->getApp();
-
         $this->assertTrue(true);
     }
 
