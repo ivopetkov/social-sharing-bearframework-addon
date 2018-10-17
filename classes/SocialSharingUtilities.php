@@ -61,6 +61,7 @@ class SocialSharingUtilities
                 $handle = curl_init();
                 curl_setopt($handle, CURLOPT_URL, $url);
                 curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($handle, CURLOPT_TIMEOUT, 10);
                 curl_multi_add_handle($mh, $handle);
                 return $handle;
             };
