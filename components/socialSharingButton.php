@@ -13,15 +13,24 @@ $app = App::get();
 $context = $app->context->get(__FILE__);
 
 $url = trim($component->url);
+$class = trim($component->class);
+$style = '';
+if (strlen($class) === 0) {
+    $class = 'ip-share-button';
+    $style = '.ip-share-button{cursor:pointer;background-color:#3374ce;border:1px solid #3169c4;font-size:12px;font-family:Helvetica,Arial,sans-serif;font-weight:bold;display:inline-block;height:33px;line-height:32px;padding:0px 10px;color:#fff;border-radius:2px;}';
+}
 
 $count = strlen($url) > 0 ? SocialSharingUtilities::getSharesCount($url, true) : null;
 $hasCount = $count !== null;
 
 $elementID = 'ssb' . uniqid();
-?><html>
-    <body>
+?><html><?php
+    if ($style !== '') {
+        echo '<head><style>' . $style . '</style></head>';
+    }
+    ?><body>
     <component src="js-lightbox" />
-    <span id="<?= $elementID ?>" style="cursor:pointer;background-color:#3374ce;border:1px solid #3169c4;font-size:12px;font-family:Helvetica,Arial,sans-serif;font-weight:bold;display:inline-block;height:33px;line-height:32px;padding:0px 10px;color:#fff;border-radius:2px;"><?= __('ivopetkov.socialSharing.Share') ?><?= $hasCount && $count > 0 ? ' | ' . $count : '' ?></span>
+    <span id="<?= $elementID ?>" class="<?= $class ?>"><?= __('ivopetkov.socialSharing.Share') ?><?= $hasCount && $count > 0 ? ' | ' . $count : '' ?></span>
     <script>
         (function () {
             var element = document.getElementById('<?= $elementID ?>');
