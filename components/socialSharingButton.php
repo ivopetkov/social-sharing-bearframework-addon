@@ -10,7 +10,7 @@ use BearFramework\App;
 use IvoPetkov\BearFrameworkAddons\SocialSharingUtilities;
 
 $app = App::get();
-$context = $app->context->get(__FILE__);
+$context = $app->contexts->get(__FILE__);
 
 $url = trim($component->url);
 $class = trim($component->class);

@@ -11,7 +11,7 @@ use BearFramework\App;
 use IvoPetkov\BearFrameworkAddons\SocialSharingUtilities;
 
 $app = App::get();
-$context = $app->context->get(__FILE__);
+$context = $app->contexts->get(__FILE__);
 
 $context->classes
         ->add('IvoPetkov\BearFrameworkAddons\SocialSharingUtilities', 'classes/SocialSharingUtilities.php');
