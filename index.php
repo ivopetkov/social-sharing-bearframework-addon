@@ -31,7 +31,7 @@ $app->localization
         });
 
 $app->serverRequests
-        ->add('ivopetkov-social-sharing-get-count', function($data) {
+        ->add('-ivopetkov-social-sharing-get-count', function($data) {
             if (isset($data['url']) && is_string($data['url'])) {
                 $count = SocialSharingUtilities::getSharesCount($data['url']);
             } else {

@@ -13,6 +13,7 @@ BearFramework\Addons::register('ivopetkov/social-sharing-bearframework-addon', _
         'ivopetkov/html-server-components-bearframework-addon',
         'ivopetkov/server-requests-bearframework-addon',
         'ivopetkov/js-lightbox-bearframework-addon',
-        'ivopetkov/locks-bearframework-addon'
+        'ivopetkov/locks-bearframework-addon',
+        'ivopetkov/client-shortcuts-bearframework-addon'
     ]
 ]);
