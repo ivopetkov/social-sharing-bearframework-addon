@@ -7,7 +7,6 @@
  */
 
 use BearFramework\App;
-use IvoPetkov\BearFrameworkAddons\SocialSharingUtilities;
 
 $app = App::get();
 $context = $app->contexts->get(__FILE__);
@@ -20,18 +19,14 @@ if (strlen($class) === 0) {
     $style = '.ip-share-button{cursor:pointer;background-color:#3374ce;border:1px solid #3169c4;font-size:12px;font-family:Helvetica,Arial,sans-serif;font-weight:bold;display:inline-block;height:33px;line-height:32px;padding:0px 10px;color:#fff;border-radius:2px;}';
 }
 
-$count = strlen($url) > 0 ? SocialSharingUtilities::getSharesCount($url, true) : null;
-$hasCount = $count !== null;
-
 $elementID = 'ssb' . uniqid();
 ?><html><head><?php
         if ($style !== '') {
             echo '<style>' . $style . '</style>';
         }
         echo '<link rel="client-packages-embed" name="lightbox">';
-        echo '<link rel="client-packages-prepare" name="serverRequests">';
         ?></head><body>
-        <span id="<?= $elementID ?>" class="<?= $class ?>"><?= __('ivopetkov.socialSharing.Share') ?><?= $hasCount && $count > 0 ? ' | ' . $count : '' ?></span>
+        <span id="<?= $elementID ?>" class="<?= $class ?>"><?= __('ivopetkov.socialSharing.Share') ?></span>
         <script>
             (function () {
                 var element = document.getElementById('<?= $elementID ?>');
@@ -61,19 +56,6 @@ $elementID = 'ssb' . uniqid();
                         context.open(html);
                     });
                 });
-<?php if (!$hasCount) { ?>
-                    clientPackages.get('serverRequests').then(function (serverRequests) {
-                        serverRequests.send('-ivopetkov-social-sharing-get-count', {'url': url}).then(function (responseText) {
-                            var result = JSON.parse(responseText);
-                            if (typeof result.count !== 'undefined' && result.count !== null) {
-                                var count = parseInt(result.count, 10);
-                                if (count > 0) {
-                                    element.innerHTML += ' | ' + count;
-                                }
-                            }
-                        });
-                    });
-<?php } ?>
             })();
         </script>
     </body>
