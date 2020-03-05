@@ -10,7 +10,7 @@
 use BearFramework\App;
 
 $app = App::get();
-$context = $app->contexts->get(__FILE__);
+$context = $app->contexts->get(__DIR__);
 
 $app->components
     ->addAlias('social-sharing-button', 'file:' . $context->dir . '/components/socialSharingButton.php');
