@@ -6,13 +6,8 @@
  * Free to use under the MIT license.
  */
 
-use BearFramework\App;
-
-$app = App::get();
-$context = $app->contexts->get(__DIR__);
-
-$url = trim($component->url);
-$class = trim($component->class);
+$url = trim((string)$component->url);
+$class = trim((string)$component->class);
 $style = '';
 if (strlen($class) === 0) {
     $class = 'ip-share-button';
@@ -27,35 +22,9 @@ if ($style !== '') {
 echo '<link rel="client-packages-embed" name="lightbox">';
 echo '<link rel="client-packages-prepare" name="serverRequests">';
 echo '</head><body>';
-?><span id="<?= $elementID ?>" class="<?= $class ?>"><?= __('ivopetkov.socialSharing.Share') ?></span>
-<script>
-    (function() {
-        var element = document.getElementById('<?= $elementID ?>');
-        var url = <?= json_encode((string) $url) ?>;
-        if (url.length === 0) {
-            url = window.location.href.toString();
-        }
-        element.addEventListener('click', function() {
-            clientPackages.get('lightbox').then(function(lightbox) {
-                var context = lightbox.make();
-                var open = function() {
-                    context.open(window.ssbwindowhtml.split('{encodedurl}').join(encodeURIComponent(url)));
-                };
-                if (typeof window.ssbwindowhtml !== 'undefined') {
-                    open();
-                } else {
-                    clientPackages.get('serverRequests').then(function(serverRequests) {
-                        serverRequests.send('-ivopetkov-social-sharing-get-window').then(function(responseText) {
-                            var result = JSON.parse(responseText);
-                            if (typeof result.html !== 'undefined') {
-                                window.ssbwindowhtml = result.html;
-                                open();
-                            }
-                        });
-                    });
-                }
-            });
-        });
-    })();
-</script><?php
-            echo '</body></html>';
+
+// Taken from socialSharingButton.js.min
+$jsCode = '!function(){var n=document.getElementById("ELEMENTID_TO_REPLACE"),e="URL_TO_REPLACE";0===e.length&&(e=window.location.href.toString()),n.addEventListener("click",(function(){clientPackages.get("lightbox").then((function(n){var t=n.make(),o=function(){t.open(window.ssbwindowhtml.split("{encodedurl}").join(encodeURIComponent(e)))};void 0!==window.ssbwindowhtml?o():clientPackages.get("serverRequests").then((function(n){n.send("-ivopetkov-social-sharing-get-window").then((function(n){var e=JSON.parse(n);void 0!==e.html&&(window.ssbwindowhtml=e.html,o())}))}))}))}))}();';
+echo '<span id="' . $elementID . '" class="' . htmlentities($class) . '">' . __('ivopetkov.socialSharing.Share') . '</span>';
+echo '<script>' . str_replace(['ELEMENTID_TO_REPLACE', 'URL_TO_REPLACE'], [$elementID, htmlentities($url)], $jsCode) . '</script>';
+echo '</body></html>';
