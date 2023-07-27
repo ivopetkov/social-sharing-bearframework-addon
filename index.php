@@ -63,7 +63,7 @@ $app->serverRequests
 $app->clientPackages
     ->add('ivopetkov-social-sharing', function (IvoPetkov\BearFrameworkAddons\ClientPackage $package) use ($context) {
         //$package->addJSCode(file_get_contents(__DIR__ . '/dev/social-sharing-button.js')); // dev mode
-        $package->addJSFile($context->assets->getURL('assets/social-sharing-button.min.js', ['cacheMaxAge' => 999999999, 'version' => 1, 'robotsNoIndex' => true]));
+        $package->addJSFile($context->assets->getURL('assets/social-sharing-button.min.js', ['cacheMaxAge' => 999999999, 'version' => 2, 'robotsNoIndex' => true]));
         $package->embedPackage('lightbox');
         $package->embedPackage('serverRequests');
     });
