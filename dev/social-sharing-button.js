@@ -6,19 +6,19 @@ ivoPetkov.bearFrameworkAddons.socialSharingButton = ivoPetkov.bearFrameworkAddon
     var resultCache = null;
 
     var open = function (url) {
-        console.log(url);
         if (typeof url === 'undefined' || url === null || url === '') {
             url = window.location.href.toString();
         }
+        var decodedURL = decodeURIComponent(url);
         clientPackages.get('lightbox').then(function (lightbox) {
             var context = lightbox.make();
             var open = function () {
-                context.open(resultCache.split('{encodedurl}').join(encodeURIComponent(url)), {
+                context.open(resultCache.split('{encodedurl}').join(encodeURIComponent(decodedURL)), {
                     onOpen: function () {
                         var copyButton = document.querySelector('[data-ipssb="c"]');
                         if (typeof navigator.clipboard !== 'undefined' && navigator.clipboard.writeText !== 'undefined') {
                             copyButton.addEventListener('click', function () {
-                                navigator.clipboard.writeText(url)
+                                navigator.clipboard.writeText(decodedURL)
                                     .then(function () {
                                         copyButton.innerText = copyButton.getAttribute('data-ipsssbt');
                                     })
@@ -33,11 +33,12 @@ ivoPetkov.bearFrameworkAddons.socialSharingButton = ivoPetkov.bearFrameworkAddon
                         var otherButton = document.querySelector('[data-ipssb="o"]');
                         if (typeof navigator.share !== 'undefined') {
                             otherButton.addEventListener('click', function () {
-                                navigator.share({ url: url })
+                                navigator.share({ url: decodedURL })
                                     .then(function () {
+                                        // do nothing
                                     })
                                     .catch(function () {
-                                        alert("Error occured!");
+                                        // do nothing
                                     });
                             });
                         } else {
