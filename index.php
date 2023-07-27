@@ -12,6 +12,9 @@ use BearFramework\App;
 $app = App::get();
 $context = $app->contexts->get(__DIR__);
 
+$context->assets
+    ->addDir('assets');
+
 $app->components
     ->addAlias('social-sharing-button', 'file:' . $context->dir . '/components/socialSharingButton.php');
 
@@ -28,21 +31,39 @@ $app->localization
 
 $app->serverRequests
     ->add('-ivopetkov-social-sharing-get-window', function ($data) {
-        $style = "cursor:pointer;display:inline-block;border-radius:4px;margin:10px;width:60px;height:60px;background-color:#fff;background-position:center center;background-repeat:no-repeat;background-size:80% 80%;";
         $styles = [
-            'fb' => "background-color:#365397;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzI4LjEzIDkzLjc1Yy00My4xMyAwLTc4LjEzIDM1LTc4LjEzIDc4LjEzdjQ2Ljg3aC02Mi41djYyLjVIMjUwVjUwMGg2Mi41VjI4MS4yNWg3MC4zbDE1LjY0LTYyLjVIMzEyLjV2LTQ2Ljg4YzAtOC42IDcuMDMtMTUuNjIgMTUuNjMtMTUuNjJoNzguMTJ2LTYyLjVoLTc4LjEzeiIvPjwvc3ZnPg==')",
-            'tw' => "background-color:#00a9f1;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzMxLjAzIDEwNi43NWMtNDEgLjA2LTc0LjI4IDMzLjMzLTc0LjI4IDc0LjQ0IDAgNS44My42NiAxMS41MyAxLjkgMTctNjEuODgtMy4xNS0xMTYuOTQtMzIuOC0xNTMuNjItNzcuOS02LjQgMTEuMDItMTAuMSAyMy44NS0xMC4xIDM3LjQ3IDAgMjUuODMgMTMuMTUgNDguNjMgMzMuMTMgNjIuMDMtMTIuMi0uMzgtMjMuNy0zLjctMzMuNzUtOS4yN3YuODRjMCAzNi4xIDI1Ljc0IDY2LjI2IDU5LjggNzMuMTMtNi4yNCAxLjctMTIuODQgMi42My0xOS42NSAyLjYzLTQuNzcgMC05LjQ0LS42LTE0LjAzLTEuNDQgOS41NCAyOS42IDM3LjAyIDUxLjEgNjkuNjYgNTEuNzYtMjUuNTUgMTkuOTgtNTcuNiAzMS45LTkyLjUzIDMxLjktNi4wNyAwLTExLjktLjM4LTE3LjgtMS4xMkMxMTIuNTUgMzg5Ljc2IDE1MS43IDQwMiAxOTMuOSA0MDJjMTM3LjEgMCAyMTIuMTMtMTEzLjUyIDIxMi4xMy0yMTEuOTcgMC0zLjIzLS4xNy02LjQ4LS4yOC05LjY2IDE0LjYtMTAuNSAyNy4yOC0yMy43IDM3LjIyLTM4LjYydi0uMDZjLTEzLjM0IDUuOS0yNy43NCA5Ljk0LTQyLjg1IDExLjc2IDE1LjMzLTkuMjYgMjcuMjgtMjMuODUgMzIuOC00MS4yOC0xNC4zOCA4LjUtMzAuMzYgMTQuNzQtNDcuNCAxOC4xNC0xMy42LTE0LjUzLTMyLjktMjMuNi01NC41LTIzLjZ6Ii8+PC9zdmc+')",
-            'in' => "background-color:#007bb6;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMTU2LjI1IDkzLjc1QzEzOS4wNSA5My43NSAxMjUgMTA3LjggMTI1IDEyNXMxNC4wNiAzMS4yNSAzMS4yNSAzMS4yNWMxNy4yIDAgMzEuMjUtMTQuMDYgMzEuMjUtMzEuMjUgMC0xNy4yLTE0LjA2LTMxLjI1LTMxLjI1LTMxLjI1ek0xMjUgMTg3LjV2MjE4Ljc1aDYyLjVWMTg3LjVIMTI1em05My43NSAwdjIxOC43NWg2Mi41di0xMjVjMC0xNy4yIDE0LjA2LTMxLjI1IDMxLjI1LTMxLjI1IDE3LjIgMCAzMS4yNSAxNC4wNiAzMS4yNSAzMS4yNXYxMjVoNjIuNVYyNjUuNjJjMC00My4xMi0zMS40OC03OC4xMi03MC4zLTc4LjEyLTIyLjEyIDAtNDEuOCAyMS4xLTU0LjcgMzguODRWMTg3LjVoLTYyLjV6Ii8+PC9zdmc+')",
-            'em' => "background-color:#777777;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNzguNzUgMTIyLjQ0Yy01LjY0LS4xOC0xMS4yOCAyLjMzLTE0Ljg0IDcuMjItNS43IDcuOC0zLjkgMTguODIgMy45IDI0LjUzbDE3MS45IDEyNWMzLjA0IDIuMjQgNi43IDMuMzUgMTAuMyAzLjM1IDMuNiAwIDcuMi0xLjAzIDEwLjMtMy4zN2wxNzEuOS0xMjVjNy44LTUuOCA5LjctMTYuNzMgMy45LTI0LjU0LTUuOC03LjgyLTE2LjcyLTkuNi0yNC41My0zLjlMMjUwIDI0My4yNCA4OC40NCAxMjUuNzVjLTIuOTMtMi4xNC02LjMtMy4yLTkuNy0zLjN6bTI1MCAxNTAuNDRjLTUuNjQtLjItMTEuMjggMi4zLTE0Ljg0IDcuMjUtNS43IDcuOS0zLjkgMTguODQgMy45IDI0LjYybDkzLjc3IDY4LjJjMy4xMyAyLjI1IDYuNzIgMy4zNiAxMC4zIDMuMzYgNS40IDAgMTAuOC0yLjU3IDE0LjIzLTcuMjZ2LS4wNmM1LjctNy44IDMuOS0xOC44My0zLjktMjQuNTNsLTkzLjc2LTY4LjIyYy0yLjkzLTIuMTQtNi4zLTMuMjMtOS43LTMuMzV6bS0xNTcuNTMuMWMtMy4zNy4xLTYuNzMgMS4yLTkuNjYgMy4zM0w2Ny44IDM0NC41Yy03LjggNS43OC05LjYgMTYuNzItMy45IDI0LjUzIDMuNDQgNC43NyA4Ljc2IDcuMjggMTQuMjMgNy4yOCAzLjYgMCA3LjE4LTEgMTAuMy0zLjM1bDkzLjc2LTY4LjEzdi0uMDVjNy44LTUuNzggOS42Ny0xNi43MiAzLjktMjQuNTMtMy42My00Ljg4LTkuMjctNy40My0xNC45LTcuMjV6Ii8+PC9zdmc+')"
+            'fb' => "background-size:30px;background-color:#3c63a5;background-image:url('data:image/svg+xml;base64," . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="#fff"><path d="M132.49 108.199l3.895-25.282h-24.257V66.519c0-6.901 3.382-13.666 14.247-13.666h11.035V31.329s-10.01-1.708-19.576-1.708c-19.986 0-33.037 12.094-33.037 34.028v19.269H62.59V108.2h22.207v62.18h27.332V108.2z"/></svg>') . "')",
+            'tw' => "background-size:30px;background-color:#00b3e1;background-image:url('data:image/svg+xml;base64," . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="#fff"><path d="M172.463 57.524a28.34 28.34 0 01-15.744 4.723 28.34 28.34 0 0012.595-15.744 28.34 28.34 0 01-17.712 6.691 28.34 28.34 0 00-48.02 25.585 78.722 78.722 0 01-57.073-29.127 28.34 28.34 0 008.659 36.999 28.34 28.34 0 01-12.595-2.755 28.34 28.34 0 0022.042 27.159 28.34 28.34 0 01-12.595.394 28.34 28.34 0 0026.372 19.68 78.722 78.722 0 01-41.329 11.415 78.722 78.722 0 00121.625-70.456 78.722 78.722 0 0013.776-14.564"/></svg>') . "')",
+            'in' => "background-size:30px;background-color:#0077b5;background-image:url('data:image/svg+xml;base64," . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="#fff"><g transform="matrix(.43604 0 0 .43604 -11.44 -8.541)"><circle cx="142" cy="138" r="37"/><path d="M244 194v198M142 194v198"/><path d="M109 194v198h66V194zm102 0v198h66V194z"/><path d="M276 282c0-20 13-40 36-40 24 0 33 18 33 45v105h66V279c0-61-32-89-76-89-34 0-51 19-59 32"/></g></svg>') . "')",
+            'em' => "background-position:left 10px center;background-size:28px;background-color:#3d3d3d;background-image:url('data:image/svg+xml;base64," . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="#fff" stroke-width="9.562" stroke-linejoin="round"><path d="M36.251 55.376h127.498v89.249H36.251z"/><path d="M36.251 55.376L100 112.75l63.749-57.374M36.251 144.624L79.76 94.9m83.989 49.724l-43.63-49.864" stroke-linecap="round"/></svg>') . "')",
+            'cp' => "background-position:left 13px center;background-size:22px;background-color:#3d3d3d;background-image:url('data:image/svg+xml;base64," . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" fill="none" stroke="#fff" stroke-width="45.6344" stroke-linejoin="round"><path d="M164.730924 141.913724h273.8064v319.4408h-273.8064z"/><path d="M347.268524 50.644924h-273.8064v319.4408" stroke-linecap="round"/></svg>') . "')",
+            'sh' => "background-position:left 13px center;background-size:22px;background-color:#3d3d3d;background-image:url('data:image/svg+xml;base64," . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="377.952766" height="377.952766" viewBox="0 0 100 100"><g transform="matrix(4.5854 0 0 4.5854 -5.0242408 -5.0242408)" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2"><path d="M16 8l-8 3zm0 8l-8-3z"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="18" cy="17" r="2"/></g></svg>') . "')"
         ];
-        $html = '<div>' .
-            '<div style="font-family:Helvetica,Arial,sans-serif;font-size:1.5rem;color:#fff;text-align:center;cursor:default;padding-bottom:0.5rem;">' . htmlspecialchars(__('ivopetkov.socialSharing.ShareOn')) . '</div>' .
+        $html = '<html>' .
+            '<head>' .
+            '<style>.ip-social-buttons a{font-family:Helvetica,Arial,sans-serif;font-size:16px;color:#fff;margin:10px auto;cursor:pointer;border-radius:4px;width:250px;height:44px;line-height:46px;text-decoration:none;padding-left:48px;padding-right:15px;background-position:left 9px center;background-repeat:no-repeat;display:block;box-sizing:border-box;}' .
+            '</style>' .
+            '</head>' .
+            '<body>' .
             '<div>' .
-            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareOnFacebook')) . '" rel="noopener" href="http://www.facebook.com/share.php?u={encodedurl}" target="_blank" style="' . $style . $styles['fb'] . '"></a>' .
-            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareOnTwitter')) . '" rel="noopener" href="http://twitter.com/intent/tweet?status={encodedurl}" target="_blank" style="' . $style . $styles['tw'] . '"></a>' .
-            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareOnLinkedIn')) . '" rel="noopener" href="http://www.linkedin.com/shareArticle?mini=true&url={encodedurl}" target="_blank" style="' . $style . $styles['in'] . '"></a>' .
-            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareInAnEmail')) . '" rel="noopener" href="mailto:?subject=&body={encodedurl}" style="' . $style . $styles['em'] . '"></a>' .
+            '<div class="ip-social-buttons">' .
+            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareOnFacebook')) . '" rel="noopener" href="http://www.facebook.com/share.php?u={encodedurl}" target="_blank" style="' . $styles['fb'] . '">' . htmlspecialchars(__('ivopetkov.socialSharing.ShareOnFacebook')) . '</a>' .
+            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareOnTwitter')) . '" rel="noopener" href="http://twitter.com/intent/tweet?status={encodedurl}" target="_blank" style="' . $styles['tw'] . '">' . htmlspecialchars(__('ivopetkov.socialSharing.ShareOnTwitter')) . '</a>' .
+            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareOnLinkedIn')) . '" rel="noopener" href="http://www.linkedin.com/shareArticle?mini=true&url={encodedurl}" target="_blank" style="' . $styles['in'] . '">' . htmlspecialchars(__('ivopetkov.socialSharing.ShareOnLinkedIn')) . '</a>' .
+            '<a title="' . htmlentities(__('ivopetkov.socialSharing.ShareInAnEmail')) . '" rel="noopener" href="mailto:?subject=&body={encodedurl}" style="' . $styles['em'] . '">' . htmlspecialchars(__('ivopetkov.socialSharing.ShareInAnEmail')) . '</a>' .
+            '<a title="' . htmlentities(__('ivopetkov.socialSharing.CopyURL')) . '" data-ipsssbt="' . htmlentities(__('ivopetkov.socialSharing.CopyURLDone')) . '" data-ipssb="c" style="' . $styles['cp'] . '">' . htmlspecialchars(__('ivopetkov.socialSharing.CopyURL')) . '</a>' .
+            '<a title="' . htmlentities(__('ivopetkov.socialSharing.DeviceShare')) . '" data-ipssb="o" style="' . $styles['sh'] . '">' . htmlspecialchars(__('ivopetkov.socialSharing.DeviceShare')) . '</a>' .
             '</div>' .
-            '</div>';
+            '</div>' .
+            '</body>' .
+            '</html>';
         return json_encode(['html' => $html]);
+    });
+
+$app->clientPackages
+    ->add('ivopetkov-social-sharing', function (IvoPetkov\BearFrameworkAddons\ClientPackage $package) use ($context) {
+        //$package->addJSCode(file_get_contents(__DIR__ . '/dev/social-sharing-button.js')); // dev mode
+        $package->addJSFile($context->assets->getURL('assets/social-sharing-button.min.js', ['cacheMaxAge' => 999999999, 'version' => 1, 'robotsNoIndex' => true]));
+        $package->embedPackage('lightbox');
+        $package->embedPackage('serverRequests');
     });
