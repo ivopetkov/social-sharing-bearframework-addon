@@ -23,9 +23,10 @@ class SocialSharingTest extends BearFramework\AddonTests\PHPUnitTestCase
         $app = $this->getApp();
 
         $html = '<component src="social-sharing-button" url="https://google.com/"/>';
-        $result = $app->components->process($html);
+        $html = $app->components->process($html);
+        $html = $app->clientPackages->process($html);
 
-        $this->assertTrue(strpos($result, '-ivopetkov-social-sharing-get-window') !== false);
-        $this->assertTrue(strpos($result, 'https://google.com/') !== false);
+        $this->assertTrue(strpos($html, 'social-sharing-button.min.js') !== false);
+        $this->assertTrue(strpos($html, 'https://google.com/') !== false);
     }
 }
